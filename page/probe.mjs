@@ -1,4 +1,5 @@
 import { configuration } from "../lib/config.mjs";
+import { authHeaders } from "../lib/hindsight.mjs";
 
 const HEALTHY = new Set(["healthy", "ok", "ready", "up"]);
 const MAX_HEALTH_BYTES = 65536;
@@ -41,7 +42,9 @@ export async function testConnection(options = {}, fetcher = fetch) {
   try {
     response = await fetcher(`${config.hindsight_api}/health`, {
       method: "GET",
-      headers: { "Accept": "application/json", "User-Agent": "magpie-hindsight-page/0.1.0" },
+      // Same credentials recall and retain use, so a protected deployment is
+      // reported as healthy instead of unauthorized.
+      headers: { "Accept": "application/json", "User-Agent": "magpie-hindsight-page/0.2.0", ...authHeaders(config) },
       redirect: "error",
       signal: AbortSignal.timeout(timeoutMs)
     });

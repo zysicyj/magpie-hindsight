@@ -7,7 +7,11 @@ const DEFAULTS = Object.freeze({
   agents: Object.freeze([]),
   gatewayTimeoutMs: 5000,
   allowRemote: false,
-  allowInsecureHttp: false
+  allowInsecureHttp: false,
+  api_key: "",
+  api_key_header: "Authorization",
+  api_key_prefix: "Bearer ",
+  max_replay_blocks: 8
 });
 const SERVICE_PORT = 3482;
 let savedOptions = {};
@@ -68,6 +72,22 @@ function readForm() {
   const bank = $("bank").value.trim();
   if (!bank || bank.length > 128 || /[/?#\x00-\x1f\x7f]/.test(bank))
     invalid("bank", "Bank 不能为空，且不能包含 / ? # 或控制字符。");
+  // Mirrors lib/config.mjs: these headers carry the request itself, so they
+  // cannot double as a credential slot.
+  const reserved = ["host", "content-length", "content-type", "connection", "transfer-encoding",
+    "expect", "upgrade", "te", "trailer", "cookie"];
+  const apiKey = $("api_key").value.trim();
+  if (apiKey.length > 512 || /[\x00-\x1f\x7f]/.test(apiKey))
+    invalid("api_key", "认证密钥最长 512 字符，且不能包含控制字符。");
+  const apiKeyHeader = $("api_key_header").value.trim();
+  if (!/^[A-Za-z0-9-]{1,64}$/.test(apiKeyHeader))
+    invalid("api_key_header", "认证头名称只能是字母、数字和连字符，长度 1–64。");
+  if (apiKey && reserved.includes(apiKeyHeader.toLowerCase()))
+    invalid("api_key_header", "该头是请求结构头，不能承载认证信息。");
+  // Not trimmed: the trailing space in "Bearer " is part of the value.
+  const apiKeyPrefix = $("api_key_prefix").value;
+  if (apiKeyPrefix.length > 64 || /[\x00-\x1f\x7f]/.test(apiKeyPrefix))
+    invalid("api_key_prefix", "认证值前缀最长 64 字符，且不能包含控制字符。");
   return {
     hindsight_api: apiUrl(),
     bank,
@@ -76,7 +96,11 @@ function readForm() {
     agents: agents(),
     gatewayTimeoutMs: integer("gatewayTimeoutMs", 100, 10000, "网关超时"),
     allowRemote: $("allowRemote").checked,
-    allowInsecureHttp: $("allowInsecureHttp").checked
+    allowInsecureHttp: $("allowInsecureHttp").checked,
+    api_key: apiKey,
+    api_key_header: apiKeyHeader,
+    api_key_prefix: apiKeyPrefix,
+    max_replay_blocks: integer("max_replay_blocks", 0, 256, "历史记忆块上限")
   };
 }
 
@@ -85,6 +109,8 @@ function updateSummary(options) {
   const list = Array.isArray(options.agents) ? options.agents : [];
   $("status-agents").textContent = list.length ? list.join(", ") : "全部（默认跳过 hermes / dsh）";
   $("status-api").textContent = "未验证（点击测试连接检查）";
+  const hasKey = typeof options.api_key === "string" && options.api_key.length > 0;
+  $("status-auth").textContent = hasKey ? `已配置 · ${options.api_key_header || DEFAULTS.api_key_header}` : "未配置";
 }
 
 function fillForm(options) {
@@ -96,6 +122,10 @@ function fillForm(options) {
   $("gatewayTimeoutMs").value = options.gatewayTimeoutMs ?? DEFAULTS.gatewayTimeoutMs;
   $("allowRemote").checked = options.allowRemote === true;
   $("allowInsecureHttp").checked = options.allowInsecureHttp === true;
+  $("api_key").value = typeof options.api_key === "string" ? options.api_key : "";
+  $("api_key_header").value = options.api_key_header ?? DEFAULTS.api_key_header;
+  $("api_key_prefix").value = typeof options.api_key_prefix === "string" ? options.api_key_prefix : DEFAULTS.api_key_prefix;
+  $("max_replay_blocks").value = options.max_replay_blocks ?? DEFAULTS.max_replay_blocks;
   updateSummary(options);
 }
 

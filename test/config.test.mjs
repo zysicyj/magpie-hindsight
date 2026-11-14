@@ -70,3 +70,35 @@ test("invalid options fail closed", () => {
   ];
   for (const options of bad) assert.throws(() => configuration(options));
 });
+
+test("credentials are optional, well-formed and never repurpose request headers", () => {
+  const open = configuration();
+  assert.equal(open.api_key, "");
+  assert.equal(open.api_key_header, "Authorization");
+  assert.equal(open.api_key_prefix, "Bearer ");
+
+  const keyed = configuration({ api_key: "secret-value", api_key_header: "X-Api-Key", api_key_prefix: "" });
+  assert.equal(keyed.api_key, "secret-value");
+  assert.equal(keyed.api_key_header, "X-Api-Key");
+  assert.equal(keyed.api_key_prefix, "");
+
+  for (const options of [
+    { api_key: "a".repeat(513) },
+    { api_key: "bad\nkey" },
+    { api_key: "value", api_key_header: "bad header" },
+    { api_key: "value", api_key_header: "" },
+    { api_key: "value", api_key_header: "Content-Type" },
+    { api_key: "value", api_key_header: "host" },
+    { api_key_prefix: "Bearer\n" }
+  ]) assert.throws(() => configuration(options), `expected rejection: ${JSON.stringify(options)}`);
+
+  // A reserved header name is only a problem when it would actually be sent.
+  assert.doesNotThrow(() => configuration({ api_key_header: "Content-Type" }));
+});
+
+test("max_replay_blocks defaults to a bounded window and rejects nonsense", () => {
+  assert.equal(configuration().max_replay_blocks, 8);
+  assert.equal(configuration({ max_replay_blocks: 0 }).max_replay_blocks, 0);
+  assert.equal(configuration({ max_replay_blocks: 256 }).max_replay_blocks, 256);
+  for (const value of [-1, 257, 1.5, "8", true]) assert.throws(() => configuration({ max_replay_blocks: value }));
+});
