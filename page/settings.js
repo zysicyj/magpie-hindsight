@@ -108,7 +108,7 @@ function updateSummary(options) {
   $("status-bank").textContent = typeof options.bank === "string" && options.bank ? options.bank : DEFAULTS.bank;
   const list = Array.isArray(options.agents) ? options.agents : [];
   $("status-agents").textContent = list.length ? list.join(", ") : "全部（默认跳过 hermes / dsh）";
-  $("status-api").textContent = "未验证（点击测试连接检查）";
+  $("status-api").textContent = "未验证";
   const hasKey = typeof options.api_key === "string" && options.api_key.length > 0;
   $("status-auth").textContent = hasKey ? `已配置 · ${options.api_key_header || DEFAULTS.api_key_header}` : "未配置";
 }
