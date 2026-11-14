@@ -96,6 +96,15 @@ test("credentials are optional, well-formed and never repurpose request headers"
   assert.doesNotThrow(() => configuration({ api_key_header: "Content-Type" }));
 });
 
+test("the credential environment variable is a name, not a secret", () => {
+  assert.equal(configuration().authorizationEnv, "");
+  assert.equal(configuration({ authorizationEnv: "HINDSIGHT_AUTHORIZATION" }).authorizationEnv, "HINDSIGHT_AUTHORIZATION");
+  assert.equal(configuration({ authorizationEnv: "_PRIVATE" }).authorizationEnv, "_PRIVATE");
+  // null means "not provided" for every option, so it falls back to the default.
+  for (const value of ["has space", "1LEADING", "dash-name", "a".repeat(129), 5, true])
+    assert.throws(() => configuration({ authorizationEnv: value }), `expected rejection: ${String(value)}`);
+});
+
 test("max_replay_blocks defaults to a bounded window and rejects nonsense", () => {
   assert.equal(configuration().max_replay_blocks, 8);
   assert.equal(configuration({ max_replay_blocks: 0 }).max_replay_blocks, 0);

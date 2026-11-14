@@ -14,7 +14,7 @@ function pageCalls(source) {
 test("settings HTML exposes every option field and status region", async () => {
   const html = await read("settings.html");
   const ids = [
-    "form", "hindsight_api", "bank", "api_key", "api_key_header", "api_key_prefix",
+    "form", "hindsight_api", "bank", "api_key", "api_key_header", "api_key_prefix", "authorizationEnv",
     "recall_max_tokens", "capture", "agents", "max_replay_blocks",
     "gatewayTimeoutMs", "allowRemote", "allowInsecureHttp", "save", "test-connection",
     "status", "status-bank", "status-api", "status-auth", "status-agents"
@@ -34,7 +34,7 @@ test("settings script parses and uses only the released options/service bridge",
   const allowed = ["service", "options.get", "options.set", "ready.then"];
   assert.deepEqual([...new Set(pageCalls(source))].sort(), [...allowed].sort());
   assert.ok(pageCalls(source).every(call => allowed.includes(call)));
-  for (const key of ["hindsight_api", "bank", "recall_max_tokens", "capture", "agents", "gatewayTimeoutMs", "allowRemote", "allowInsecureHttp", "api_key", "api_key_header", "api_key_prefix", "max_replay_blocks"])
+  for (const key of ["hindsight_api", "bank", "recall_max_tokens", "capture", "agents", "gatewayTimeoutMs", "allowRemote", "allowInsecureHttp", "api_key", "api_key_header", "api_key_prefix", "authorizationEnv", "max_replay_blocks"])
     assert.match(source, new RegExp(`\\b${key}\\b`));
   assert.match(source, /location\.assign/);
 });

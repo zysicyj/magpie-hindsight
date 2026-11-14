@@ -58,7 +58,7 @@ input:not([type=checkbox]) {
   border: 1px solid var(--line); border-radius: 7px;
   background: var(--card-soft); color: var(--fg); font: inherit;
 }
-input[type=url], input[type=number], #agents { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+input[type=url], input[type=number], #agents, #authorizationEnv { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 /* Magpie pages must not use type="password"; mask the credential visually and
    keep the value readable to the form only. */
 .secret { -webkit-text-security: disc; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }

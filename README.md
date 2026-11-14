@@ -1,12 +1,12 @@
 # magpie-hindsight
 
-[English](#english) · [中文](#中文) · Apache-2.0
+[English](#english) · [中文](#中文) · MIT AND Apache-2.0
 
 > **衍生项目 / Derivative work**
 >
-> 本仓库来自 [Sam-dancing-nu1/magpie-hindsight](https://github.com/Sam-dancing-nu1/magpie-hindsight)（Apache-2.0），fork 于 `0c5327f`，原作者 **Sam-Dancing**。基础架构、设计思路与主体实现归原作者所有；本仓库只做缺陷修复与加固，差异见[与原版的差异](#与原版的差异--changes-from-the-original)。原始许可证见 [LICENSE](LICENSE)，归属声明见 [NOTICE](NOTICE)。
+> 本仓库来自 [Sam-dancing-nu1/magpie-hindsight](https://github.com/Sam-dancing-nu1/magpie-hindsight)（Apache-2.0），fork 于 `0c5327f`，原作者 **Sam-Dancing**。基础架构、设计思路与主体实现归原作者所有；本仓库只做缺陷修复与加固，差异见[与原版的差异](#与原版的差异--changes-from-the-original)。原始许可证全文见 [LICENSE-APACHE](LICENSE-APACHE)，本仓库改动为 MIT（[LICENSE](LICENSE)），归属声明见 [NOTICE](NOTICE)。
 >
-> This is a **fork** of [Sam-dancing-nu1/magpie-hindsight](https://github.com/Sam-dancing-nu1/magpie-hindsight) by **Sam-Dancing**, taken at commit `0c5327f` and hardened as described in [Changes from the original](#changes-from-the-original). Original work Apache-2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+> This is a **fork** of [Sam-dancing-nu1/magpie-hindsight](https://github.com/Sam-dancing-nu1/magpie-hindsight) by **Sam-Dancing**, taken at commit `0c5327f` and hardened as described in [Changes from the original](#changes-from-the-original). Original work Apache-2.0 ([LICENSE-APACHE](LICENSE-APACHE)); the changes here are MIT ([LICENSE](LICENSE)); attribution in [NOTICE](NOTICE).
 
 <a id="english"></a>
 ## English
@@ -55,6 +55,7 @@ magpie plugin options magpie-hindsight '{
   "api_key": "",
   "api_key_header": "Authorization",
   "api_key_prefix": "Bearer ",
+  "authorizationEnv": "",
   "max_replay_blocks": 8
 }'
 ```
@@ -70,6 +71,7 @@ magpie plugin options magpie-hindsight '{
 | `api_key` | `""` | Credential sent to Hindsight. Empty sends no auth header. Never logged. |
 | `api_key_header` | `Authorization` | Header carrying the credential. Request-structure headers (`Host`, `Content-Type`, `Cookie`, …) are rejected. |
 | `api_key_prefix` | `Bearer ` | Prepended to the key, so `Bearer ` + key by default. Clear it for APIs that want the bare key. **This option is not trimmed** — the trailing space is significant. |
+| `authorizationEnv` | `""` | Name of an environment variable that holds the credential instead of `api_key`, so the secret stays out of the options file. `api_key` wins when both are set; an unset variable authenticates nothing. A value that already starts with `Bearer ` is sent as-is. |
 | `max_replay_blocks` | `8` | How many historical memory blocks may stay attached to the resent conversation. `0` = unlimited. |
 | `allowRemote` | `false` | Required when `hindsight_api` is not loopback: recall sends the latest user message (up to 8 KB) to that host. |
 | `allowInsecureHttp` | `false` | Additionally required for plain `http://` to a non-loopback host. |
@@ -78,7 +80,7 @@ Three notes on the added options:
 
 - `max_replay_blocks` bounds context growth. Every finished turn leaves its recalled block in the resent conversation (that is what keeps the prompt cache warm), so an unbounded conversation keeps paying for every past recall. Crossing the cap drops the **whole older tail at once** rather than one block per request: one cache miss every `max_replay_blocks` turns, byte-stable in between.
 - `recall_max_tokens` is a real token budget. The wrapper estimates CJK code points at ~1 token and Latin text at ~4 characters per token, and a single memory may take at most 75% of the fact budget, so one oversized entry cannot starve the others.
-- `api_key` covers a single static credential header. It does not do OAuth, mTLS or header rotation; for anything stronger put a local reverse proxy in front and point `hindsight_api` at it.
+- `api_key` and `authorizationEnv` cover a single static credential header. They do not do OAuth, mTLS or header rotation; for anything stronger put a local reverse proxy in front and point `hindsight_api` at it.
 
 Restore runtime defaults:
 
@@ -134,7 +136,8 @@ Base: `Sam-dancing-nu1/magpie-hindsight@0c5327f`. Plugin name, option keys and t
 3. **Fixed: recall timeout degenerated at small gateway budgets.** A fixed 200 ms reserve against `gatewayTimeoutMs = 100` left nothing to fail open with; the reserve now scales, and the 8 s ceiling that silently discarded a 10 s budget is gone.
 4. **New: `max_replay_blocks`.** Bounds how much recalled memory stays in context, dropping in batches to keep the prompt cache stable in between.
 5. **Changed: the recall budget is a token budget.** The old `maxTokens * 8` character cap was 2–4× looser than the `max_tokens` actually sent, and one huge entry could consume all of it. Now language-aware estimation, token-boundary truncation, and a 75% per-entry ceiling.
-6. **New: `api_key` / `api_key_header` / `api_key_prefix`.** Recall, retain and the health probe share the same credential header; the settings page masks the value and never displays it in status output.
+6. **New: `api_key` / `api_key_header` / `api_key_prefix` / `authorizationEnv`.** Recall, retain and the health probe share the same credential header; the settings page masks the value and never displays it in status output. `authorizationEnv` names an environment variable to read the credential from instead.
+7. **New icon.** The list glyph (three text lines and two dots) read as a sidebar; it is now an open recall ring around the recalled turn, with the arrowhead geometry generated rather than drawn by eye.
 
 Everything else is the original work.
 
@@ -187,6 +190,7 @@ magpie plugin options magpie-hindsight '{
   "api_key": "",
   "api_key_header": "Authorization",
   "api_key_prefix": "Bearer ",
+  "authorizationEnv": "",
   "max_replay_blocks": 8
 }'
 ```
@@ -202,6 +206,7 @@ magpie plugin options magpie-hindsight '{
 | `api_key` | `""` | 发给 Hindsight 的认证密钥；留空则不发送认证头，且永不写日志。 |
 | `api_key_header` | `Authorization` | 承载密钥的请求头。`Host`、`Content-Type`、`Cookie` 等请求结构头不允许占用。 |
 | `api_key_prefix` | `Bearer ` | 密钥前缀，默认拼成 `Bearer ` + 密钥。服务端只认裸密钥时清空。**该值不做 trim**，尾随空格有意义。 |
+| `authorizationEnv` | `""` | 存放认证值的环境变量名，用于把密钥放在环境里而不是配置文件里。两者都在时以 `api_key` 为准；变量不存在则不发送认证头；值已带 `Bearer ` 前缀时不重复添加。 |
 | `max_replay_blocks` | `8` | 多轮对话中最多保留几块历史召回记忆，`0` 表示不限。 |
 | `allowRemote` | `false` | `hindsight_api` 非 loopback 时必须显式开启：recall 会把最新用户消息（最多 8KB）发往该主机。 |
 | `allowInsecureHttp` | `false` | 非 loopback 且为纯 `http://` 时还需额外开启。 |
@@ -210,7 +215,7 @@ magpie plugin options magpie-hindsight '{
 
 - `max_replay_blocks` 用来兜住上下文膨胀。每一轮的召回块都会随重发的对话一直留在上下文里（这正是 prompt cache 保持命中的原因），轮数多了就是线性付费。超过上限时**整段丢弃**而不是每轮滑一个，因此是「每 N 轮失效一次缓存」，中间的请求逐字稳定。
 - `recall_max_tokens` 是真正的 token 预算：包装层把 CJK 码点按约 1 token、拉丁文本按约 4 字符/token 估算，单条记忆最多占事实预算的 75%，避免一条超长记忆把其余召回挤掉。
-- `api_key` 只覆盖「一个静态认证头」。不做 OAuth、mTLS、密钥轮换；需要更强的鉴权就在本机放一层反向代理，把 `hindsight_api` 指向它。
+- `api_key` 与 `authorizationEnv` 只覆盖「一个静态认证头」。不做 OAuth、mTLS、密钥轮换；需要更强的鉴权就在本机放一层反向代理，把 `hindsight_api` 指向它。
 
 清除已保存配置并恢复运行时默认值：
 
@@ -262,10 +267,11 @@ npm run check
 3. **修复：小超时预算下召回超时退化。** 固定留 200ms 余量时，`gatewayTimeoutMs = 100` 等于没有余量；现在余量按比例缩放，同时去掉了那个把 10s 预算悄悄压到 8s 的天花板。
 4. **新增 `max_replay_blocks`。** 给上下文里的历史记忆块加上限；超额时整段丢弃，保证中间的请求缓存稳定。
 5. **改动：召回预算是 token 预算。** 原来的 `maxTokens * 8` 字符上限比实际发出的 `max_tokens` 松 2–4 倍，一条超长记忆能吃掉全部额度。现在按语言估算 token、按 token 边界截断，并给单条加 75% 上限。
-6. **新增 `api_key` / `api_key_header` / `api_key_prefix`。** recall、retain 和健康探活共用同一个认证头；设置页对密钥做掩码，状态区只显示「已配置/未配置」。
+6. **新增 `api_key` / `api_key_header` / `api_key_prefix` / `authorizationEnv`。** recall、retain 和健康探活共用同一个认证头；设置页对密钥做掩码，状态区只显示来源而不回显。`authorizationEnv` 可改用环境变量存放认证值。
+7. **新增图标。** 原来的「三行文字 + 两圆点」读起来像侧边栏；现在是一圈开口的召回环包住被召回的回合，箭头几何由脚本生成而非手绘。
 
 其余均为原作者实现。
 
 ### 许可证
 
-Apache-2.0 · 原始作品 © 2024-2026 Sam-Dancing · 本仓库改动 © 2026 zysicyj
+MIT AND Apache-2.0 · 原始作品 © 2024-2026 Sam-Dancing · 本仓库改动 © 2026 zysicyj

@@ -1,22 +1,36 @@
 magpie-hindsight
 ================
 
-This project is a derivative work. It is not the original project.
+This project is a derivative work, not the original project, and it is not
+affiliated with or endorsed by the original author.
 
-Original work:
+Original work
+-------------
   magpie-hindsight
   Copyright 2024-2026 Sam-Dancing
   https://github.com/Sam-dancing-nu1/magpie-hindsight
   Licensed under the Apache License, Version 2.0
 
-Modifications in this repository:
+  The fork was taken at commit 0c5327f ("Fix tool-loop capture and harden
+  memory blocks").
+
+Modifications
+-------------
   Copyright 2026 zysicyj
   https://github.com/zysicyj/magpie-hindsight
 
-The fork was taken from the original repository at commit 0c5327f
-("Fix tool-loop capture and harden memory blocks") and then changed as described in
-README.md, section "与原版的差异 / Changes from the original". The plugin name,
-option keys and Magpie hook contract are kept compatible with the original so an
-existing installation can switch between the two without reconfiguring.
+  The changes are listed in README.md ("Changes from the original"). They
+  include the icon, the settings page, the credential options, the replay cap,
+  the token-budget estimate and the tests added here.
 
-Licensed under the Apache License, Version 2.0. See LICENSE.
+Licensing
+---------
+  Changes made here:            MIT (LICENSE)
+  Inherited portions:           Apache License 2.0 (LICENSE-APACHE)
+
+  Section 4 of the Apache License requires that the notices above are kept, that
+  recipients receive a copy of the license, and that modified files carry
+  prominent notices of the change. Both license texts ship with this package for
+  that reason. The plugin name, option keys and the Magpie hook contract stay
+  compatible with the original, so an existing installation can switch between
+  the two without reconfiguring.

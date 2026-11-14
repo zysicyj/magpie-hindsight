@@ -11,6 +11,7 @@ const DEFAULTS = Object.freeze({
   api_key: "",
   api_key_header: "Authorization",
   api_key_prefix: "Bearer ",
+  authorizationEnv: "",
   max_replay_blocks: 8
 });
 const SERVICE_PORT = 3482;
@@ -88,6 +89,9 @@ function readForm() {
   const apiKeyPrefix = $("api_key_prefix").value;
   if (apiKeyPrefix.length > 64 || /[\x00-\x1f\x7f]/.test(apiKeyPrefix))
     invalid("api_key_prefix", "认证值前缀最长 64 字符，且不能包含控制字符。");
+  const authorizationEnv = $("authorizationEnv").value.trim();
+  if (authorizationEnv && !/^[A-Za-z_][A-Za-z0-9_]{0,127}$/.test(authorizationEnv))
+    invalid("authorizationEnv", "环境变量名只能包含字母、数字和下划线，不能以数字开头，最长 128。");
   return {
     hindsight_api: apiUrl(),
     bank,
@@ -100,6 +104,7 @@ function readForm() {
     api_key: apiKey,
     api_key_header: apiKeyHeader,
     api_key_prefix: apiKeyPrefix,
+    authorizationEnv,
     max_replay_blocks: integer("max_replay_blocks", 0, 256, "历史记忆块上限")
   };
 }
@@ -110,7 +115,12 @@ function updateSummary(options) {
   $("status-agents").textContent = list.length ? list.join(", ") : "全部（默认跳过 hermes / dsh）";
   $("status-api").textContent = "未验证";
   const hasKey = typeof options.api_key === "string" && options.api_key.length > 0;
-  $("status-auth").textContent = hasKey ? `已配置 · ${options.api_key_header || DEFAULTS.api_key_header}` : "未配置";
+  const envName = typeof options.authorizationEnv === "string" ? options.authorizationEnv : "";
+  // The page cannot read the service's environment, so it reports where the
+  // credential would come from, not whether it is present there.
+  $("status-auth").textContent = hasKey
+    ? `已配置 · ${options.api_key_header || DEFAULTS.api_key_header}`
+    : envName ? `来自环境变量 ${envName}` : "未配置";
 }
 
 function fillForm(options) {
@@ -125,6 +135,7 @@ function fillForm(options) {
   $("api_key").value = typeof options.api_key === "string" ? options.api_key : "";
   $("api_key_header").value = options.api_key_header ?? DEFAULTS.api_key_header;
   $("api_key_prefix").value = typeof options.api_key_prefix === "string" ? options.api_key_prefix : DEFAULTS.api_key_prefix;
+  $("authorizationEnv").value = typeof options.authorizationEnv === "string" ? options.authorizationEnv : "";
   $("max_replay_blocks").value = options.max_replay_blocks ?? DEFAULTS.max_replay_blocks;
   updateSummary(options);
 }
