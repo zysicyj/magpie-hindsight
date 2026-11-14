@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { Script } from "node:vm";
-import { testConnection } from "./probe.mjs";
+import { testConnection } from "../page/probe.mjs";
 
-const read = name => readFile(new URL(`./${name}`, import.meta.url), "utf8");
+const read = name => readFile(new URL(`../page/${name}`, import.meta.url), "utf8");
 
 function pageCalls(source) {
   return [...source.matchAll(/\bmagpie\s*(?:\?\.|\.)\s*([\w$]+(?:\s*(?:\?\.|\.)\s*[\w$]+)*)/g)]
@@ -40,7 +40,7 @@ test("settings script parses and uses only the released options/service bridge",
 });
 
 test("the connection-test envelope keeps `ok` flat and `code` a string", async () => {
-  const { testEnvelope } = await import("./service.mjs");
+  const { testEnvelope } = await import("../page/service.mjs");
 
   const healthy = testEnvelope({ ok: true, code: "connected", ms: 12, bank: "hermes-dsh" });
   assert.equal(healthy.status, 200);
@@ -107,7 +107,7 @@ test("health probe reuses the saved credential so a protected API reports health
 });
 
 test("loopback service has the Magpie host entry point without starting on import", async () => {
-  const { default: service } = await import("./service.mjs");
+  const { default: service } = await import("../page/service.mjs");
   assert.equal(service.id, "magpie-hindsight");
   assert.equal(typeof service.server, "function");
 });

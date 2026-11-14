@@ -48,6 +48,8 @@ h2 { margin-bottom: 12px; font-size: 13px; font-weight: 650; }
 .status-grid div { min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card-soft); }
 .status-grid dt { color: var(--muted); font-size: 11px; }
 .status-grid dd { margin: 3px 0 0; overflow-wrap: anywhere; font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+/* A variable name is one token: truncate it instead of breaking it mid-word. */
+#status-auth { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .notice { margin-top: 12px; color: var(--muted); font-size: 12px; }
 .notice strong { color: var(--fg); font-weight: 600; }
 #form > section + section { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }

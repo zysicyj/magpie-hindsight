@@ -117,10 +117,14 @@ function updateSummary(options) {
   const hasKey = typeof options.api_key === "string" && options.api_key.length > 0;
   const envName = typeof options.authorizationEnv === "string" ? options.authorizationEnv : "";
   // The page cannot read the service's environment, so it reports where the
-  // credential would come from, not whether it is present there.
-  $("status-auth").textContent = hasKey
+  // credential would come from, not whether it is present there. A variable
+  // name has no spaces, so it is kept on one line and truncated with the full
+  // name in the tooltip rather than broken mid-word.
+  const auth = $("status-auth");
+  auth.textContent = hasKey
     ? `已配置 · ${options.api_key_header || DEFAULTS.api_key_header}`
-    : envName ? `来自环境变量 ${envName}` : "未配置";
+    : envName ? `环境变量 ${envName}` : "未配置";
+  auth.title = envName && !hasKey ? envName : "";
 }
 
 function fillForm(options) {
