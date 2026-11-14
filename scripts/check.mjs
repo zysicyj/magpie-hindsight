@@ -20,4 +20,10 @@ for (const file of await walk(".")) {
 const manifest = JSON.parse(await readFile("package.json", "utf8"));
 if (manifest.magpie?.hooks !== "./hooks.mjs" || !manifest.keywords.includes("magpie-plugin") || manifest.license !== "Apache-2.0") process.exit(1);
 if (manifest.magpie.options.capture !== false || manifest.magpie.options.bank !== "hermes" || manifest.magpie.options.recall_max_tokens !== 1024 || manifest.magpie.options.gatewayTimeoutMs !== 5000) process.exit(1);
+// A published default must never carry a credential or an unbounded window.
+if (manifest.magpie.options.api_key !== "" || manifest.magpie.options.max_replay_blocks !== 8) process.exit(1);
+const declared = new Set(Object.keys(manifest.magpie.options));
+for (const key of ["api_key", "api_key_header", "api_key_prefix", "max_replay_blocks"]) {
+  if (!declared.has(key)) process.exit(1);
+}
 console.log("Syntax and Magpie package metadata checked.");

@@ -1,17 +1,20 @@
 {
   "name": "magpie-hindsight",
-  "version": "0.1.0",
-  "description": "Automatic Hindsight memory recall and opt-in conversation capture for Magpie asynchronous gateway hooks.",
+  "version": "0.2.0",
+  "description": "Automatic Hindsight memory recall and opt-in conversation capture for Magpie asynchronous gateway hooks. Hardened fork of Sam-dancing-nu1/magpie-hindsight.",
   "type": "module",
   "license": "Apache-2.0",
-  "author": "Sam-dancing-nu1",
+  "author": "zysicyj",
+  "contributors": [
+    "Sam-dancing-nu1 (original author of github.com/Sam-dancing-nu1/magpie-hindsight)"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sam-dancing-nu1/magpie-hindsight.git"
+    "url": "git+https://github.com/zysicyj/magpie-hindsight.git"
   },
-  "homepage": "https://github.com/Sam-dancing-nu1/magpie-hindsight#readme",
+  "homepage": "https://github.com/zysicyj/magpie-hindsight#readme",
   "bugs": {
-    "url": "https://github.com/Sam-dancing-nu1/magpie-hindsight/issues"
+    "url": "https://github.com/zysicyj/magpie-hindsight/issues"
   },
   "keywords": [
     "magpie-plugin",
@@ -29,10 +32,11 @@
     "lib/",
     "README.md",
     "LICENSE",
+    "NOTICE",
     "page"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test test/*.test.mjs page/*.test.mjs",
     "check": "node scripts/check.mjs"
   },
   "magpie": {
@@ -45,6 +49,10 @@
       "capture": false,
       "agents": [],
       "gatewayTimeoutMs": 5000,
+      "api_key": "",
+      "api_key_header": "Authorization",
+      "api_key_prefix": "Bearer ",
+      "max_replay_blocks": 8,
       "port": 3482
     },
     "page": {

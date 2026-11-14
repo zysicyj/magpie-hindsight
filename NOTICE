@@ -1,0 +1,22 @@
+magpie-hindsight
+================
+
+This project is a derivative work. It is not the original project.
+
+Original work:
+  magpie-hindsight
+  Copyright 2024-2026 Sam-Dancing
+  https://github.com/Sam-dancing-nu1/magpie-hindsight
+  Licensed under the Apache License, Version 2.0
+
+Modifications in this repository:
+  Copyright 2026 zysicyj
+  https://github.com/zysicyj/magpie-hindsight
+
+The fork was taken from the original repository at commit 0c5327f
+("Fix tool-loop capture and harden memory blocks") and then changed as described in
+README.md, section "与原版的差异 / Changes from the original". The plugin name,
+option keys and Magpie hook contract are kept compatible with the original so an
+existing installation can switch between the two without reconfiguring.
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
