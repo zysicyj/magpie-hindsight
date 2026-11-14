@@ -30,13 +30,16 @@ test("package declares asynchronous hooks and safe defaults", async () => {
   const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
   assert.equal(pkg.main, "./page/service.mjs");
   assert.equal(pkg.magpie.hooks, "./hooks.mjs");
-  assert.equal(pkg.license, "Apache-2.0");
+  assert.equal(pkg.license, "MIT AND Apache-2.0");
+  assert.equal(pkg.magpie.options.api_key, "");
+  assert.equal(pkg.magpie.options.authorizationEnv, "");
+  assert.match(pkg.magpie.icon, /^data:image\/svg\+xml;base64,/);
   assert.equal(pkg.magpie.options.capture, false);
   assert.equal(pkg.magpie.options.hindsight_api, "http://127.0.0.1:8888");
   assert.equal(pkg.magpie.options.bank, "hermes");
   assert.equal(pkg.magpie.options.recall_max_tokens, 1024);
   assert.equal(pkg.magpie.options.gatewayTimeoutMs, 5000);
-  assert.ok(pkg.keywords.includes("magpie-plugin"));
+  assert.ok(pkg.keywords.includes("magpie") && pkg.keywords.includes("magpie-gateway"));
   const entry = await import("../hooks.mjs");
   assert.equal(typeof entry.onRequest, "function");
   assert.equal(typeof entry.onResponse, "function");
