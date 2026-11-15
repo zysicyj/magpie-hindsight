@@ -11,7 +11,9 @@
   </defs>
   <rect x="2" y="2" width="60" height="60" rx="17" fill="url(#plate)"/>
   <rect x="2.5" y="2.5" width="59" height="59" rx="16.5" stroke="#2B4759" stroke-opacity=".85"/>
-  <path d="M19.47 21.11A16.6 16.6 0 1 0 44.53 21.11" stroke="url(#mark)" stroke-width="4.9" stroke-linecap="round"/>
-  <path d="M47.55 18.49L41.97 18.17L41.51 23.73Z" fill="url(#mark)" stroke="url(#mark)" stroke-width="1.1" stroke-linejoin="round"/>
-  <circle cx="32" cy="32" r="5" fill="url(#mark)"/>
+  <path d="M42.8 28.4 54.6 32.4 42.5 36.2 44 32.3Z" fill="#F5FCFB"/>
+  <circle cx="33.8" cy="32.2" r="10.1" fill="#F5FCFB"/>
+  <path d="M27.2 41.8c-3.7 3.9-8.8 6.4-14.6 6.9 1.1-5.7 3.6-10.8 7.4-14.9 2.5-2.7 5.6-4.7 9-5.9-.8 4.9-.5 9.8.9 14.5Z" fill="url(#mark)"/>
+  <circle cx="36.3" cy="29.8" r="2.7" fill="#0A111B"/>
+  <circle cx="36.3" cy="29.8" r="1.2" fill="#7FF3DD"/>
 </svg>

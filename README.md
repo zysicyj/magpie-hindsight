@@ -137,7 +137,7 @@ Base: `Sam-dancing-nu1/magpie-hindsight@0c5327f`. Plugin name, option keys and t
 4. **New: `max_replay_blocks`.** Bounds how much recalled memory stays in context, dropping in batches to keep the prompt cache stable in between.
 5. **Changed: the recall budget is a token budget.** The old `maxTokens * 8` character cap was 2–4× looser than the `max_tokens` actually sent, and one huge entry could consume all of it. Now language-aware estimation, token-boundary truncation, and a 75% per-entry ceiling.
 6. **New: `api_key` / `api_key_header` / `api_key_prefix` / `authorizationEnv`.** Recall, retain and the health probe share the same credential header; the settings page masks the value and never displays it in status output. `authorizationEnv` names an environment variable to read the credential from instead.
-7. **New icon.** The list glyph (three text lines and two dots) read as a sidebar; it is now an open recall ring around the recalled turn, with the arrowhead geometry generated rather than drawn by eye.
+7. **New icon.** The list glyph (three text lines and two dots) read as a sidebar; it is now a magpie head — the bird the plugin is named after — with a mint wing arc that doubles as the recalled turn, on the same dark plate so it holds up on light and dark surfaces. Shapes are kept to a few geometry primitives so the mark stays legible at 16 px.
 
 Everything else is the original work.
 
@@ -268,7 +268,7 @@ npm run check
 4. **新增 `max_replay_blocks`。** 给上下文里的历史记忆块加上限；超额时整段丢弃，保证中间的请求缓存稳定。
 5. **改动：召回预算是 token 预算。** 原来的 `maxTokens * 8` 字符上限比实际发出的 `max_tokens` 松 2–4 倍，一条超长记忆能吃掉全部额度。现在按语言估算 token、按 token 边界截断，并给单条加 75% 上限。
 6. **新增 `api_key` / `api_key_header` / `api_key_prefix` / `authorizationEnv`。** recall、retain 和健康探活共用同一个认证头；设置页对密钥做掩码，状态区只显示来源而不回显。`authorizationEnv` 可改用环境变量存放认证值。
-7. **新增图标。** 原来的「三行文字 + 两圆点」读起来像侧边栏；现在是一圈开口的召回环包住被召回的回合，箭头几何由脚本生成而非手绘。
+7. **新增图标。** 原来的「三行文字 + 两圆点」读起来像侧边栏；现在是一枚喜鹊头（插件名里的那只鸟），薄荷色的翅膀弧线同时充当「被召回的回合」，仍放在深色底板上，亮色和暗色界面都清晰。图形只由少量几何基本形组成，16 px 下依然可辨。
 
 其余均为原作者实现。
 
